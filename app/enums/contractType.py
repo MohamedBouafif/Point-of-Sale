@@ -1,7 +1,7 @@
 from enum import Enum
 
 class ContractType(Enum):
-    Cdi = "CDI"
-    Cdd = "CDD"
-    Sivp = "SIVP"
-    Apperenti = "APPRENTI"
+    Cdi = "Cdi"
+    Cdd = "Cdd"
+    Sivp = "Sivp"
+    Apprenti = "Apprenti"

@@ -1,7 +1,7 @@
-from enum import Enum
-from sqlalchemy import Column , Integer, String, DateTime, Date,func
+
+from sqlalchemy import Column , Integer, String, DateTime, Date,func,CheckConstraint,Enum
 from ..database import Base
-from datetime import datetime, UTC
+
 from app.enums import Gender,  AccountStatus,ContractType
 from sqlalchemy.types import Enum as SQLEnum
 
@@ -15,15 +15,20 @@ class Employee(Base):
         password =Column(String, nullable=True)
         number = Column(Integer, nullable = False)
         birth_date = Column(Date, nullable= True)
-        address = Column(Date, nullable=True)
+        address = Column(String, nullable=True)
         cnss_number = Column(String,  nullable=True)
-        contract_type = Column(SQLEnum(ContractType), nullable=True)
-        gender = Column(SQLEnum(Gender), nullable=False)
+        contract_type = Column(Enum(ContractType), nullable=True)
+        gender = Column(Enum(Gender), nullable=False)
         Account_status = Column(
-                SQLEnum(AccountStatus),
+                Enum(AccountStatus),
                 nullable=False,
                 default = AccountStatus.Inactive
         )
         phone_number = Column(String, unique =True, nullable=True)
         created_on = Column(DateTime, nullable=False,  server_default=func.now())
-
+        __table_args__ = (
+                CheckConstraint(
+                "(contract_type IN ('Cdi', 'Cdd') AND cnss_number IS NOT NULL AND cnss_number ~ '^\\d{8}-\\d{2}$') OR (contract_type IN ('Apprenti', 'Sivp') AND (cnss_number IS NULL OR cnss_number ~ '^\\d{8}-\\d{2}$'))",
+                name="ck_employees_cnss_number"
+        ),
+    )
