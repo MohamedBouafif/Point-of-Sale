@@ -20,11 +20,13 @@ async def root():
 
 
 @app.post("/employee/", response_model = schemas.EmployeeOut ) 
-def create_employee(employee: schemas.EmployeeCreate, db :Session = Depends(get_db)):
+async def create_employee(employee: schemas.EmployeeCreate, db :Session = Depends(get_db)):
+    if(employee.confirm_password != employee.password):
+        return HTTPException(status_code=400  , detail = "Password must match!")
     db_employee = crud.get_by_email(db, email = employee.email)
     if db_employee:
         raise HTTPException(status_code = 400, detail = "Email already registered")
-    return crud.add(db=db , employee=employee)
+    return await crud.add(db=db , employee=employee)
 
 
 
